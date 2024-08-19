@@ -5,15 +5,23 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+import javax.crypto.SecretKey;
+
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
 
+@Component
 public class JwtUtil {
 
-    private String secret = "secret_key";
+    private String key = "9cLI4LvT4LIyqkZlOPRXRUWLcOfdPvUD7YOeSQ7Ee2kibFVzllxoutyezAMGXkIg";
+
+    private SecretKey secret = Keys.hmacShaKeyFor(Decoders.BASE64.decode(key));
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -29,7 +37,11 @@ public class JwtUtil {
     }
 
     private Claims extractAllClaims(String token) {
-        return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
+        return Jwts.parserBuilder()
+                    .setSigningKey(secret)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
     }
 
     private Boolean isTokenExpired(String token) {
@@ -44,7 +56,7 @@ public class JwtUtil {
     private String createToken(Map<String, Object> claims, String subject) {
         return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))
-                .signWith(SignatureAlgorithm.HS256, secret).compact();
+                .signWith(secret, SignatureAlgorithm.HS512).compact();
     }
 
     public Boolean validateToken(String token, UserDetails userDetails) {

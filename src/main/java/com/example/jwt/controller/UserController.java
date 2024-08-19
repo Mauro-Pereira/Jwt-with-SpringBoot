@@ -2,8 +2,11 @@ package com.example.jwt.controller;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -19,10 +22,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.jwt.config.CustomUserDetailsService;
 import com.example.jwt.config.JwtUtil;
-import com.example.jwt.entity.AuthenticationResponse;
+import com.example.jwt.dto.AuthenticationRequest;
+import com.example.jwt.dto.AuthenticationResponse;
+import com.example.jwt.dto.UserMapper;
+import com.example.jwt.dto.UserResponse;
+import com.example.jwt.dto.UserResquest;
 import com.example.jwt.entity.User;
+import com.example.jwt.service.CustomUserDetailsService;
 import com.example.jwt.service.UserService;
 
 @RestController
@@ -41,8 +48,9 @@ public class UserController {
     @Autowired
     private JwtUtil jwtTokenUtil;
 
+    
     @PostMapping("/authenticate")
-    public AuthenticationResponse createAuthenticationToken(@RequestBody User authenticationRequest) throws Exception {
+    public AuthenticationResponse createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest) throws Exception {
 
         try {
             authenticationManager.authenticate(
@@ -61,8 +69,8 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public User registerUser(@RequestBody User user) {
-        return userService.saveUser(user);
+    public ResponseEntity<User> registerUser(@RequestBody UserResquest userRequest) {
+        return new ResponseEntity<>(userService.saveUser(UserMapper.userRequestToUser(userRequest)), HttpStatus.OK); 
     }
 
     @GetMapping("/me")
@@ -70,27 +78,44 @@ public class UserController {
         return userService.findUserByEmail(authentication.getName());
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
-    @PutMapping("/{id}")
-    public User updateUser(@PathVariable Long id, @RequestBody User user) {
-        Optional<User> existingUser = userService.findUserById(id);
-        if (existingUser.isPresent()) {
-            user.setId(id);
-            return userService.updateUser(user);
-        } else {
-            throw new RuntimeException("User not found");
-        }
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    @PutMapping("/me/updateUser/{id}")
+    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody UserResquest userResquest) {
+        User updateUser = this.userService.updateUser(id, UserMapper.userRequestToUser(userResquest));
+        return new ResponseEntity<>(updateUser, HttpStatus.OK);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping("/{id}")
-    public void deleteUser(@PathVariable Long id) {
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    @DeleteMapping("/me/deleteUser/{id}")
+    public ResponseEntity<?> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
+
+        return new ResponseEntity<>("Deleted with successfully", HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping
-    public List<User> getAllUsers() {
-        return userService.findAllUsers();
+    @GetMapping("/admin/listAllUsers")
+    public ResponseEntity<List<UserResponse>> getAllUsers() {
+
+        List<UserResponse> userResponseList = this.userService
+                                            .findAllUsers()
+                                            .stream()
+                                            .map(UserMapper::userToUserResponse)
+                                            .collect(Collectors.toList()
+                                            );
+
+        return new ResponseEntity<>(userResponseList, HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/admin/user/setAdminUser/{id}")
+    public ResponseEntity<String> setAdminUser(@PathVariable Long id){
+        return new ResponseEntity<>(this.userService.setAdminUser(id), HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/admin/user/removeAdminUser/{id}")
+    public ResponseEntity<String> removeAdminUser(@PathVariable Long id){
+        return new ResponseEntity<>(this.userService.removeAdminUser(id), HttpStatus.OK);
     }
 }

@@ -1,4 +1,4 @@
-package com.example.jwt.entity;
+package com.example.jwt.dto;
 
 public class AuthenticationResponse {
 
@@ -14,3 +14,4 @@ public class AuthenticationResponse {
     }
 
 }
+

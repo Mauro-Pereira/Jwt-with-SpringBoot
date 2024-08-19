@@ -1,4 +1,4 @@
-package com.example.jwt.config;
+package com.example.jwt.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -6,6 +6,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import com.example.jwt.entity.CustomUserDetails;
 import com.example.jwt.entity.User;
 import com.example.jwt.repository.UserRepository;
 
@@ -24,3 +25,4 @@ public class CustomUserDetailsService implements UserDetailsService{
     }
 
 }
+
