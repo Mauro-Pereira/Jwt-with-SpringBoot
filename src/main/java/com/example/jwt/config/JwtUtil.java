@@ -19,9 +19,11 @@ import io.jsonwebtoken.security.Keys;
 @Component
 public class JwtUtil {
 
-    private String key = "9cLI4LvT4LIyqkZlOPRXRUWLcOfdPvUD7YOeSQ7Ee2kibFVzllxoutyezAMGXkIg";
+    private SecretKey key =  Keys.secretKeyFor(SignatureAlgorithm.HS512);
+    
+    //"heXC+axR72uD0A6i8p5JoDjS5rfQdCtTYdW2Sm8TLPE=";
 
-    private SecretKey secret = Keys.hmacShaKeyFor(Decoders.BASE64.decode(key));
+    //private SecretKey secret = Keys.hmacShaKeyFor(Decoders.BASE64.decode(key));
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -38,7 +40,7 @@ public class JwtUtil {
 
     private Claims extractAllClaims(String token) {
         return Jwts.parserBuilder()
-                    .setSigningKey(secret)
+                    .setSigningKey(key)
                     .build()
                     .parseClaimsJws(token)
                     .getBody();
@@ -56,7 +58,7 @@ public class JwtUtil {
     private String createToken(Map<String, Object> claims, String subject) {
         return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))
-                .signWith(secret, SignatureAlgorithm.HS512).compact();
+                .signWith(key, SignatureAlgorithm.HS512).compact();
     }
 
     public Boolean validateToken(String token, UserDetails userDetails) {

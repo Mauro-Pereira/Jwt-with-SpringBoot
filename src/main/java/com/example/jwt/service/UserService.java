@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.example.jwt.entity.Role;
 import com.example.jwt.entity.User;
 import com.example.jwt.exception.UserAlreadyExistsException;
 import com.example.jwt.exception.UserNotFoundException;
@@ -23,11 +24,11 @@ public class UserService {
 
     public User saveUser(User user) {
         Optional<User> optionalUser = this.userRepository.findByEmail(user.getEmail());
-        User newUser = optionalUser.get();
-
-        if(newUser.getId() != null){
+        
+        if(optionalUser.isPresent()){
             throw new UserAlreadyExistsException("This user is Already exists");
         }
+
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
@@ -81,6 +82,7 @@ public class UserService {
         }
 
         newUser.get().setAdmin(true);
+        newUser.get().setRole(Role.ADMIN);
 
         return "User is an admin now";
 
@@ -98,6 +100,7 @@ public class UserService {
         }
 
         optionalUser.get().setAdmin(false);
+        optionalUser.get().setRole(Role.USER);
 
         return "This user is a common user now";
 

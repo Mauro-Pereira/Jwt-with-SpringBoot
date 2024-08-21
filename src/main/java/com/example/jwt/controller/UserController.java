@@ -32,6 +32,12 @@ import com.example.jwt.entity.User;
 import com.example.jwt.service.CustomUserDetailsService;
 import com.example.jwt.service.UserService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
+@Tag(name = "JWT", description = "JWT Spring Boot API")
 @RestController
 @RequestMapping("/users")
 public class UserController {
@@ -49,6 +55,12 @@ public class UserController {
     private JwtUtil jwtTokenUtil;
 
     
+    @Operation(
+        summary = "Autentica Usuário",
+        description = "Ao entrar com um email e senha, o usuário será autenticado")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "successful operation")
+    })
     @PostMapping("/authenticate")
     public AuthenticationResponse createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest) throws Exception {
 
@@ -68,16 +80,35 @@ public class UserController {
         return new AuthenticationResponse(jwt);
     }
 
+    @Operation(
+            summary = "Registra um Usuário",
+            description = "Ao entrar com o Nome, Email e senha o usuário será devidamente cadastrado no sistema")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "successful operation")
+    })
     @PostMapping("/register")
     public ResponseEntity<User> registerUser(@RequestBody UserRequest userRequest) {
         return new ResponseEntity<>(userService.saveUser(UserMapper.userRequestToUser(userRequest)), HttpStatus.OK); 
     }
 
+
+    @Operation(
+            summary = "Mostra detalhes de um usuário logado",
+            description = "Desde que o usuário esteja logado, ele poderá ver detalhes de seu cadastro")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "successful operation")
+    })
     @GetMapping("/me")
     public Optional<User> getUserDetails(Authentication authentication) {
         return userService.findUserByEmail(authentication.getName());
     }
 
+    @Operation(
+            summary = "Atualiza Usuário",
+            description = "Desde que o usuário esteja logado, ele poderá realizar uma atualização de seu cadastro")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "successful operation")
+    })
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @PutMapping("/me/updateUser/{id}")
     public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody UserRequest userResquest) {
@@ -85,6 +116,12 @@ public class UserController {
         return new ResponseEntity<>(updateUser, HttpStatus.OK);
     }
 
+    @Operation(
+            summary = "Deleta Usuário",
+            description = "Por meio deste endpoint, o usuário poderá feitar o apagameto de seu cadastro")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "successful operation")
+    })
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @DeleteMapping("/me/deleteUser/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable Long id) {
@@ -93,6 +130,12 @@ public class UserController {
         return new ResponseEntity<>("Deleted with successfully", HttpStatus.OK);
     }
 
+    @Operation(
+            summary = "Retorna Usuários",
+            description = "Desde que o usuário logado seja um admin, ele poderá ver todos os usuários cadastrados")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "successful operation")
+    })
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/admin/listAllUsers")
     public ResponseEntity<List<UserResponse>> getAllUsers() {
@@ -107,12 +150,24 @@ public class UserController {
         return new ResponseEntity<>(userResponseList, HttpStatus.OK);
     }
 
+    @Operation(
+            summary = "Atribui a um usuário comum o título de admin",
+            description = "Desde que o usuário esteja logado e seja um admin, ele pode fazer de outro usuário admin")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "successful operation")
+    })
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/admin/user/setAdminUser/{id}")
     public ResponseEntity<String> setAdminUser(@PathVariable Long id){
         return new ResponseEntity<>(this.userService.setAdminUser(id), HttpStatus.OK);
     }
 
+    @Operation(
+            summary = "Remove título de admin",
+            description = "Desde que o usuário esteja logado e seja um admin, ele pode remover o título de admin")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "successful operation")
+    })
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/admin/user/removeAdminUser/{id}")
     public ResponseEntity<String> removeAdminUser(@PathVariable Long id){
