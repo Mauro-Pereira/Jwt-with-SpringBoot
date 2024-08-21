@@ -27,7 +27,7 @@ import com.example.jwt.dto.AuthenticationRequest;
 import com.example.jwt.dto.AuthenticationResponse;
 import com.example.jwt.dto.UserMapper;
 import com.example.jwt.dto.UserResponse;
-import com.example.jwt.dto.UserResquest;
+import com.example.jwt.dto.UserRequest;
 import com.example.jwt.entity.User;
 import com.example.jwt.service.CustomUserDetailsService;
 import com.example.jwt.service.UserService;
@@ -69,7 +69,7 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<User> registerUser(@RequestBody UserResquest userRequest) {
+    public ResponseEntity<User> registerUser(@RequestBody UserRequest userRequest) {
         return new ResponseEntity<>(userService.saveUser(UserMapper.userRequestToUser(userRequest)), HttpStatus.OK); 
     }
 
@@ -80,7 +80,7 @@ public class UserController {
 
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @PutMapping("/me/updateUser/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody UserResquest userResquest) {
+    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody UserRequest userResquest) {
         User updateUser = this.userService.updateUser(id, UserMapper.userRequestToUser(userResquest));
         return new ResponseEntity<>(updateUser, HttpStatus.OK);
     }

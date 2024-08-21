@@ -5,7 +5,7 @@ import com.example.jwt.entity.User;
 public class UserMapper {
 
 
-    public static User userRequestToUser(UserResquest userRequest){
+    public static User userRequestToUser(UserRequest userRequest){
         User newUser = new User();
         newUser.setName(userRequest.getName());
         newUser.setEmail(userRequest.getEmail());
