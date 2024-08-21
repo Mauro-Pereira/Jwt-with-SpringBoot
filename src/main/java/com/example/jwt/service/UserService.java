@@ -8,6 +8,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.example.jwt.entity.User;
+import com.example.jwt.exception.UserAlreadyExistsException;
+import com.example.jwt.exception.UserNotFoundException;
 import com.example.jwt.repository.UserRepository;
 
 @Service
@@ -24,7 +26,7 @@ public class UserService {
         User newUser = optionalUser.get();
 
         if(newUser.getId() != null){
-            System.out.println("An exception here");
+            throw new UserAlreadyExistsException("This user is Already exists");
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
@@ -34,7 +36,7 @@ public class UserService {
         Optional<User> newUser = userRepository.findById(id);
 
         if(newUser.isEmpty()){
-            System.out.println("An exception here");
+            throw new UserNotFoundException("User not found");
         }
 
         newUser.get().setName(user.getName());
@@ -60,7 +62,7 @@ public class UserService {
         Optional<User> optionalUser = this.userRepository.findById(id);
 
         if(optionalUser.isEmpty()){
-            System.out.println("User not found");
+            throw new UserNotFoundException("User not found");
         }
 
         userRepository.deleteById(id);
@@ -75,7 +77,7 @@ public class UserService {
         }
 
         if(newUser.get().isAdmin()){
-            return "This user already an admin";
+            return "This user is already an admin";
         }
 
         newUser.get().setAdmin(true);
