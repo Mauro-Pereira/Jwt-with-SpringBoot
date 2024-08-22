@@ -67,7 +67,7 @@ public class UserController {
 
         try {
             authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(authenticationRequest.getEmail(), authenticationRequest.getPassword())
+                new UsernamePasswordAuthenticationToken(authenticationRequest.getEmail(), authenticationRequest.getPassword())
             );
         } catch (BadCredentialsException e) {
             throw new Exception("Incorrect username or password", e);

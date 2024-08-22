@@ -1,5 +1,6 @@
 package com.example.jwt.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -27,6 +28,7 @@ public class User {
     private Long id;
 
     @NotNull
+    @Column(name="user_name")
     private String name;
 
     @NotNull
@@ -34,6 +36,7 @@ public class User {
     private String email;
 
     @NotNull
+    @Column(name="user_password")
     private String password;
 
     private boolean isAdmin = false;
