@@ -35,6 +35,7 @@ import com.example.jwt.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Tag(name = "JWT", description = "JWT Spring Boot API")
@@ -81,10 +82,10 @@ public class UserController {
     }
 
     @Operation(
-            summary = "Registra um Usuário",
-            description = "Ao entrar com o Nome, Email e senha o usuário será devidamente cadastrado no sistema")
+        summary = "Registra um Usuário",
+        description = "Ao entrar com o Nome, Email e senha o usuário será devidamente cadastrado no sistema")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "successful operation")
+        @ApiResponse(responseCode = "200", description = "successful operation")
     })
     @PostMapping("/register")
     public ResponseEntity<User> registerUser(@RequestBody UserRequest userRequest) {
@@ -93,37 +94,40 @@ public class UserController {
 
 
     @Operation(
-            summary = "Mostra detalhes de um usuário logado",
-            description = "Desde que o usuário esteja logado, ele poderá ver detalhes de seu cadastro")
+        summary = "Mostra detalhes de um usuário logado",
+        description = "Desde que o usuário esteja logado, ele poderá ver detalhes de seu cadastro")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "successful operation")
+        @ApiResponse(responseCode = "200", description = "successful operation")
     })
+    @SecurityRequirement(name = "Authorization")
     @GetMapping("/me")
     public Optional<User> getUserDetails(Authentication authentication) {
         return userService.findUserByEmail(authentication.getName());
     }
 
     @Operation(
-            summary = "Atualiza Usuário",
-            description = "Desde que o usuário esteja logado, ele poderá realizar uma atualização de seu cadastro")
+        summary = "Atualiza Usuário",
+        description = "Desde que o usuário esteja logado, ele poderá realizar uma atualização de seu cadastro")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "successful operation")
+        @ApiResponse(responseCode = "200", description = "successful operation")
     })
+    @SecurityRequirement(name = "Authorization")
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
-    @PutMapping("/me/updateUser/{id}")
+    @PutMapping("/updateUser/{id}")
     public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody UserRequest userResquest) {
         User updateUser = this.userService.updateUser(id, UserMapper.userRequestToUser(userResquest));
         return new ResponseEntity<>(updateUser, HttpStatus.OK);
     }
 
     @Operation(
-            summary = "Deleta Usuário",
-            description = "Por meio deste endpoint, o usuário poderá feitar o apagameto de seu cadastro")
+        summary = "Deleta Usuário",
+        description = "Por meio deste endpoint, o usuário poderá feitar o apagameto de seu cadastro")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "successful operation")
+        @ApiResponse(responseCode = "200", description = "successful operation")
     })
+    @SecurityRequirement(name = "Authorization")
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
-    @DeleteMapping("/me/deleteUser/{id}")
+    @DeleteMapping("/deleteUser/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
 
@@ -131,11 +135,12 @@ public class UserController {
     }
 
     @Operation(
-            summary = "Retorna Usuários",
-            description = "Desde que o usuário logado seja um admin, ele poderá ver todos os usuários cadastrados")
+        summary = "Retorna Usuários",
+        description = "Desde que o usuário logado seja um admin, ele poderá ver todos os usuários cadastrados")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "successful operation")
+        @ApiResponse(responseCode = "200", description = "successful operation")
     })
+    @SecurityRequirement(name = "Authorization")
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/admin/listAllUsers")
     public ResponseEntity<List<UserResponse>> getAllUsers() {
@@ -151,25 +156,27 @@ public class UserController {
     }
 
     @Operation(
-            summary = "Atribui a um usuário comum o título de admin",
-            description = "Desde que o usuário esteja logado e seja um admin, ele pode fazer de outro usuário admin")
+        summary = "Atribui a um usuário comum o título de admin",
+        description = "Desde que o usuário esteja logado e seja um admin, ele pode fazer de outro usuário admin")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "successful operation")
+        @ApiResponse(responseCode = "200", description = "successful operation")
     })
+    @SecurityRequirement(name = "Authorization")
     @PreAuthorize("hasRole('ADMIN')")
-    @PutMapping("/admin/user/setAdminUser/{id}")
+    @PutMapping("/admin/setAdminUser/{id}")
     public ResponseEntity<String> setAdminUser(@PathVariable Long id){
         return new ResponseEntity<>(this.userService.setAdminUser(id), HttpStatus.OK);
     }
 
     @Operation(
-            summary = "Remove título de admin",
-            description = "Desde que o usuário esteja logado e seja um admin, ele pode remover o título de admin")
+        summary = "Remove título de admin",
+        description = "Desde que o usuário esteja logado e seja um admin, ele pode remover o título de admin")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "successful operation")
+        @ApiResponse(responseCode = "200", description = "successful operation")
     })
+    @SecurityRequirement(name = "Authorization")
     @PreAuthorize("hasRole('ADMIN')")
-    @PutMapping("/admin/user/removeAdminUser/{id}")
+    @PutMapping("/admin/removeAdminUser/{id}")
     public ResponseEntity<String> removeAdminUser(@PathVariable Long id){
         return new ResponseEntity<>(this.userService.removeAdminUser(id), HttpStatus.OK);
     }

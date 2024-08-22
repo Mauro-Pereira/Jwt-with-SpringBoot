@@ -13,15 +13,12 @@ import org.springframework.stereotype.Component;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 
 @Component
 public class JwtUtil {
 
     private SecretKey key =  Keys.secretKeyFor(SignatureAlgorithm.HS512);
-    
-    //"heXC+axR72uD0A6i8p5JoDjS5rfQdCtTYdW2Sm8TLPE=";
 
     //private SecretKey secret = Keys.hmacShaKeyFor(Decoders.BASE64.decode(key));
 

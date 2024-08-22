@@ -1,6 +1,5 @@
 package com.example.jwt.config;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -40,8 +39,11 @@ public class SecurityConfig{
             .csrf(csrf -> csrf.disable()) // Disable CSRF for stateless APIs
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/users/authenticate", "/users/register", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                .requestMatchers("/users/me").authenticated()
-                .requestMatchers("/users/**").hasRole("ADMIN")
+                .requestMatchers("/users/updateUser/**").hasAnyRole("ADMIN", "USER")
+                .requestMatchers("/users/deleteUser/**").hasAnyRole("ADMIN", "USER")
+                .requestMatchers("/users/admin/listAllUsers").hasRole("ADMIN")
+                .requestMatchers("/users/admin/setAdminUser/**").hasRole("ADMIN")
+                .requestMatchers("/users/admin/removeAdminUser/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
             )
             .sessionManagement(sess -> sess
