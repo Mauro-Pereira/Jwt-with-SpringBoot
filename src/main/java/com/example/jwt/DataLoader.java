@@ -8,6 +8,10 @@ import org.springframework.stereotype.Component;
 import com.example.jwt.entity.User;
 import com.example.jwt.repository.UserRepository;
 
+/*
+ * This class creates an admin user on the system
+*/
+
 @Component
 public class DataLoader implements CommandLineRunner {
 
