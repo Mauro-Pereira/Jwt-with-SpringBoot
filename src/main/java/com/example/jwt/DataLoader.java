@@ -5,6 +5,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import com.example.jwt.entity.Role;
 import com.example.jwt.entity.User;
 import com.example.jwt.repository.UserRepository;
 
@@ -28,6 +29,7 @@ public class DataLoader implements CommandLineRunner {
         user.setEmail("root@email.com");
         user.setPassword(passwordEncoder.encode("password"));
         user.setAdmin(true);
+        user.setRole(Role.ADMIN);
 
         userRepository.save(user);
     }

@@ -84,6 +84,8 @@ public class UserService {
         newUser.get().setAdmin(true);
         newUser.get().setRole(Role.ADMIN);
 
+        this.userRepository.save(newUser.get());
+
         return "User is an admin now";
 
     }
@@ -101,6 +103,8 @@ public class UserService {
 
         optionalUser.get().setAdmin(false);
         optionalUser.get().setRole(Role.USER);
+
+        this.userRepository.save(optionalUser.get());
 
         return "This user is a common user now";
 
