@@ -35,7 +35,7 @@ O **Swagger** é uma ferramenta para documentação de APIs RESTful. Ele permite
 
    ```bash
 
-   git clone https://github.com/seu-usuario/seu-projeto.git
+   https://github.com/Mauro-Pereira/Jwt-with-SpringBoot.git
 
    ```
 
