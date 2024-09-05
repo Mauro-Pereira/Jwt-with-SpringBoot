@@ -13,6 +13,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -41,6 +42,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Tag(name = "JWT", description = "JWT Spring Boot API")
 @RestController
 @RequestMapping("/users")
+//@CrossOrigin(
+   // origins = "http://localhost:4200", 
+   // allowedHeaders = "*", 
+   // allowCredentials = "true", 
+   // methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS}
+//)
 public class UserController {
 
     @Autowired
