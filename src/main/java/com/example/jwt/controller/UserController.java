@@ -67,7 +67,9 @@ public class UserController {
         summary = "Autentica Usuário",
         description = "Ao entrar com um email e senha, o usuário será autenticado")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "successful operation")
+        @ApiResponse(responseCode = "200", description = "Authenticated successfully"),
+        @ApiResponse(responseCode = "401", description = "Unauthorized - Incorrect username or password"),
+        @ApiResponse(responseCode = "404", description = "User not found")
     })
     @PostMapping("/authenticate")
     public AuthenticationResponse createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest) throws Exception {
