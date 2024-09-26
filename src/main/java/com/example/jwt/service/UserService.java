@@ -40,9 +40,17 @@ public class UserService {
             throw new UserNotFoundException("User not found");
         }
 
-        newUser.get().setName(user.getName());
-        newUser.get().setEmail(user.getEmail());
-        newUser.get().setPassword(user.getPassword());
+        if(user.getName() != null){
+            newUser.get().setName(user.getName());
+        }
+
+        if(user.getEmail() != null){
+            newUser.get().setEmail(user.getEmail());
+        }
+        
+        if(user.getPassword() != null){
+            newUser.get().setPassword(passwordEncoder.encode(user.getPassword()));
+        }
 
         return userRepository.save(newUser.get());
     }

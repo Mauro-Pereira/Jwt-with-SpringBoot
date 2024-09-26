@@ -13,6 +13,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,6 +31,7 @@ import com.example.jwt.dto.UserMapper;
 import com.example.jwt.dto.UserResponse;
 import com.example.jwt.dto.UserRequest;
 import com.example.jwt.entity.User;
+import com.example.jwt.exception.UserAlreadyExistsException;
 import com.example.jwt.service.CustomUserDetailsService;
 import com.example.jwt.service.UserService;
 
@@ -72,14 +74,14 @@ public class UserController {
         @ApiResponse(responseCode = "404", description = "User not found")
     })
     @PostMapping("/authenticate")
-    public AuthenticationResponse createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest) throws Exception {
+    public AuthenticationResponse createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest) throws BadCredentialsException, UsernameNotFoundException  {
 
         try {
             authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(authenticationRequest.getEmail(), authenticationRequest.getPassword())
             );
-        } catch (BadCredentialsException e) {
-            throw new Exception("Incorrect username or password", e);
+        } catch (BadCredentialsException | UsernameNotFoundException e) {
+            throw e;
         }
 
         final UserDetails userDetails = userDetailsService
@@ -98,7 +100,11 @@ public class UserController {
     })
     @PostMapping("/register")
     public ResponseEntity<User> registerUser(@RequestBody UserRequest userRequest) {
-        return new ResponseEntity<>(userService.saveUser(UserMapper.userRequestToUser(userRequest)), HttpStatus.OK); 
+        try{
+            return new ResponseEntity<>(userService.saveUser(UserMapper.userRequestToUser(userRequest)), HttpStatus.OK);
+        }catch(UserAlreadyExistsException e) {
+            throw e;
+        }
     }
 
 
