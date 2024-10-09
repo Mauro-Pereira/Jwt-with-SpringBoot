@@ -14,7 +14,7 @@ public class UserMapper {
     }
 
     public static UserResponse userToUserResponse(User user){
-        return new UserResponse(user.getName(), user.getEmail(), user.isAdmin());
+        return new UserResponse(user.getId(), user.getName(), user.getEmail(), user.isAdmin());
 
     }
     
